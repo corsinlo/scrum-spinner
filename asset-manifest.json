@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/scrum-spinner/static/css/main.77380065.css",
+    "main.js": "/scrum-spinner/static/js/main.de2d51ea.js",
+    "static/js/453.9a686834.chunk.js": "/scrum-spinner/static/js/453.9a686834.chunk.js",
+    "static/media/trumpet.mp3": "/scrum-spinner/static/media/trumpet.48c3b0cb44b1ca1547ea.mp3",
+    "index.html": "/scrum-spinner/index.html",
+    "main.77380065.css.map": "/scrum-spinner/static/css/main.77380065.css.map",
+    "main.de2d51ea.js.map": "/scrum-spinner/static/js/main.de2d51ea.js.map",
+    "453.9a686834.chunk.js.map": "/scrum-spinner/static/js/453.9a686834.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.77380065.css",
+    "static/js/main.de2d51ea.js"
+  ]
+}
