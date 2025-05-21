@@ -1,16 +1,67 @@
 import React, { useRef, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import logo from '../media/logo.png';
+import wheelSoundUrl from '../media/wheel1.mp3'; // This is a URL string
+
 const initialNames = ['Alessandra', 'Andrea', 'Ilio', 'Dani', 'Ludo', 'Michela'];
-const trumpetSound = new Audio(require('../media/trumpet.mp3'));
+
+const SOUND_QUERIES = [
+    'trumpet', 'applause', 'laugh', 'cheer', 'bell', 'whistle',
+    'drum', 'siren', 'clap', 'horn', 'fanfare', 'saxophone',
+    'guitar', 'piano', 'flute', 'violin', 'xylophone', 'trombone',
+    'synth', 'bass', 'sitar', 'ukulele', 'accordion', 'harmonica',
+    'banjo', 'bagpipe', 'didgeridoo', 'marimba', 'mandolin',
+    'ocarina', 'theremin', 'kalimba', 'zither', 'cello', 'bassoon',
+    'sax', 'trumpet fanfare', 'tuba', 'french horn', 'piccolo',
+    'clarinet', 'oboe', 'bass clarinet', 'bass trombone', 'baritone',
+    'trombone fanfare', 'sousaphone', 'cornet', 'flugelhorn', 'car', 'plane',
+    'train', 'boat', 'motorcycle', 'bicycle', 'bus', 'truck',
+    'helicopter', 'rocket', 'spaceship', 'submarine', 'hovercraft',
+    'ambulance', 'fire truck', 'police car', 'taxi', 'limo', 'concert',
+    'festival', 'party', 'crowd', 'street', 'market', 'fair',
+    'parade', 'circus', 'theater', 'opera', 'ballet', 'musical',
+    'concert hall', 'stadium', 'arena', 'amphitheater', 'outdoor',
+    'indoor', 'club', 'bar', 'pub', 'lounge', 'restaurant'
+];
+
+const API_KEY = process.env.REACT_APP_FREESOUND_API_KEY;
+
+async function fetchSoundsByQuery(apiKey, query) {
+    const url = `https://freesound.org/apiv2/search/text/?query=${query}&fields=name,previews&token=${apiKey}&page_size=10`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.results.map((result) => result.previews['preview-hq-mp3']);
+    } catch (error) {
+        console.error('Error fetching sound previews:', error);
+        return [];
+    }
+}
 
 export default function SpinTheWheel() {
     const [names, setNames] = useState(initialNames);
     const [selected, setSelected] = useState(null);
     const [spinning, setSpinning] = useState(false);
+    const [currentAudio, setCurrentAudio] = useState(null);
     const [angle, setAngle] = useState(0);
+    const [soundQuery, setSoundQuery] = useState('');
+    const [soundUrls, setSoundUrls] = useState([]);
     const [newName, setNewName] = useState('');
     const canvasRef = useRef(null);
+    const wheelAudioRef = useRef(null);
+
+    useEffect(() => {
+        wheelAudioRef.current = new Audio(wheelSoundUrl);
+        wheelAudioRef.current.loop = true;
+
+        const randomQuery = SOUND_QUERIES[Math.floor(Math.random() * SOUND_QUERIES.length)];
+        setSoundQuery(randomQuery);
+
+        fetchSoundsByQuery(API_KEY, randomQuery).then((urls) => {
+            setSoundUrls(urls);
+        });
+    }, []);
 
     const getColor = (index, total) => {
         const hue = (index * 360) / total;
@@ -29,22 +80,45 @@ export default function SpinTheWheel() {
 
         names.forEach((name, i) => {
             const angle = i * arc;
+
+            // 🌈 Radial gradient for a 3D-like slice
+            const gradient = ctx.createRadialGradient(center, center, radius * 0.3, center, center, radius);
+            gradient.addColorStop(0, 'white');
+            gradient.addColorStop(0.3, getColor(i, names.length));
+            gradient.addColorStop(1, 'black');
+
             ctx.beginPath();
             ctx.moveTo(center, center);
             ctx.arc(center, center, radius, angle, angle + arc);
-            ctx.fillStyle = getColor(i, names.length);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
             ctx.fill();
 
+            // 🖋️ Draw borders between slices
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // ✏️ Text
             ctx.save();
             ctx.translate(center, center);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = 'white';
             ctx.font = 'bold 14px sans-serif';
             ctx.fillText(name, radius - 10, 5);
             ctx.restore();
         });
+
+        // 🟠 Center circle for style
+        ctx.beginPath();
+        ctx.arc(center, center, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = '#666';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.stroke();
     };
+
 
     const spinWheel = () => {
         if (spinning || names.length === 0) return;
@@ -59,6 +133,12 @@ export default function SpinTheWheel() {
         setSpinning(true);
         setAngle(finalAngle);
 
+        // ▶️ Play spinning sound
+        if (wheelAudioRef.current) {
+            wheelAudioRef.current.currentTime = 0;
+            wheelAudioRef.current.play();
+        }
+
         canvas.style.transition = 'none';
         canvas.style.transform = 'rotate(0deg)';
 
@@ -70,16 +150,34 @@ export default function SpinTheWheel() {
         setTimeout(() => {
             setSelected(names[selectedIndex]);
             setSpinning(false);
+
+            // ⏹ Stop spinning sound
+            if (wheelAudioRef.current) {
+                wheelAudioRef.current.pause();
+                wheelAudioRef.current.currentTime = 0;
+            }
+
             confetti({
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 },
             });
-            trumpetSound.play();
+
+            // 🔊 Play one of the fetched sounds
+            if (soundUrls.length > 0) {
+                const randomUrl = soundUrls[Math.floor(Math.random() * soundUrls.length)];
+                const audio = new Audio(randomUrl);
+                audio.play();
+                setCurrentAudio(audio);
+            }
         }, 3050);
     };
 
     const removeSelected = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
         setNames(names.filter((n) => n !== selected));
         setSelected(null);
     };
@@ -110,11 +208,12 @@ export default function SpinTheWheel() {
         <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-white">
             <img src={logo} alt="Logo" className="w-200 h-200 mb-2" />
 
-            {/* Title */}
-            <h1 className="text-3xl">Scrum Spinner v1.0.0</h1>
+            <h1 className="text-3xl">Scrum Spinner v1.0.1</h1>
             <p className="text-lg text-gray-600">by Ludo</p>
+            <p className="text-md text-gray-700 italic">
+                🎵 Sound of the day: <strong>{soundQuery}</strong>
+            </p>
 
-            {/* Wheel */}
             <div className="relative">
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
                     <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-black rotate-270"></div>
@@ -127,7 +226,6 @@ export default function SpinTheWheel() {
                 ></canvas>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-2">
                 <button
                     onClick={spinWheel}
@@ -150,7 +248,6 @@ export default function SpinTheWheel() {
                 </button>
             </div>
 
-            {/* Add Name Input */}
             <div className="flex gap-2 mt-4">
                 <input
                     type="text"
@@ -167,11 +264,10 @@ export default function SpinTheWheel() {
                 </button>
             </div>
 
-            {/* Winner Modal */}
             {selected && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded shadow-xl text-center">
-                        <p className="text-xl font-bold">{selected} is up!</p>
+                        <p className="text-xl">Tocca a <span className="font-bold">{selected}!</span> </p>
                         <button
                             onClick={removeSelected}
                             className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
