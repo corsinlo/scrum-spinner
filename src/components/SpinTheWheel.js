@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 import logo from '../media/logo.png';
 import wheelSoundUrl from '../media/wheel1.mp3'; // This is a URL string
 
-const initialNames = ['Alessandra', 'Andrea', 'Ilio', 'Dani', 'Ludo', 'Michela'];
+const initialNames = ['Andrea', 'Dani', 'Ludo', 'Michela'];
 
 const SOUND_QUERIES = [
     'trumpet', 'applause', 'laugh', 'cheer', 'bell', 'whistle',
@@ -14,15 +14,20 @@ const SOUND_QUERIES = [
     'ocarina', 'theremin', 'kalimba', 'zither', 'cello', 'bassoon',
     'sax', 'trumpet fanfare', 'tuba', 'french horn', 'piccolo',
     'clarinet', 'oboe', 'bass clarinet', 'bass trombone', 'baritone',
-    'trombone fanfare', 'sousaphone', 'cornet', 'flugelhorn', 'car', 'plane',
-    'train', 'boat', 'motorcycle', 'bicycle', 'bus', 'truck',
+    'trombone fanfare', 'sousaphone', 'cornet', 'flugelhorn',
+    'car', 'plane', 'train', 'boat', 'motorcycle', 'bicycle', 'bus', 'truck',
     'helicopter', 'rocket', 'spaceship', 'submarine', 'hovercraft',
-    'ambulance', 'fire truck', 'police car', 'taxi', 'limo', 'concert',
-    'festival', 'party', 'crowd', 'street', 'market', 'fair',
+    'ambulance', 'fire truck', 'police car', 'taxi', 'limo',
+    'concert', 'festival', 'party', 'crowd', 'street', 'market', 'fair',
     'parade', 'circus', 'theater', 'opera', 'ballet', 'musical',
-    'concert hall', 'stadium', 'arena', 'amphitheater', 'outdoor',
-    'indoor', 'club', 'bar', 'pub', 'lounge', 'restaurant'
+    'concert hall', 'stadium', 'arena', 'amphitheater',
+    'club', 'bar', 'pub', 'lounge', 'restaurant',
+    'bongo', 'conga', 'djembe', 'tabla', 'tambourine', 'triangle',
+    'rain', 'thunder', 'wind', 'forest', 'ocean', 'waves', 'fire',
+    'heartbeat', 'footsteps', 'boo', 'shout', 'cry', 'chant',
+    'trance', 'techno', 'dubstep', 'chiptune', 'ambient', 'lofi', 'glitch'
 ];
+
 
 const API_KEY = process.env.REACT_APP_FREESOUND_API_KEY;
 
@@ -65,7 +70,7 @@ export default function SpinTheWheel() {
 
     const getColor = (index, total) => {
         const hue = (index * 360) / total;
-        return `hsl(${hue}, 80%, 60%)`;
+        return `hsl(${hue}, 90%, 70%)`; // Brighter and more saturated
     };
 
     const drawWheel = (names) => {
@@ -84,8 +89,8 @@ export default function SpinTheWheel() {
             // 🌈 Radial gradient for a 3D-like slice
             const gradient = ctx.createRadialGradient(center, center, radius * 0.3, center, center, radius);
             gradient.addColorStop(0, 'white');
-            gradient.addColorStop(0.3, getColor(i, names.length));
-            gradient.addColorStop(1, 'black');
+            gradient.addColorStop(0.5, getColor(i, names.length));
+            gradient.addColorStop(1, getColor(i, names.length));;
 
             ctx.beginPath();
             ctx.moveTo(center, center);
@@ -104,7 +109,7 @@ export default function SpinTheWheel() {
             ctx.translate(center, center);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = 'black';
             ctx.font = 'bold 14px sans-serif';
             ctx.fillText(name, radius - 10, 5);
             ctx.restore();
@@ -206,9 +211,9 @@ export default function SpinTheWheel() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-white">
-            <img src={logo} alt="Logo" className="w-200 h-200 mb-2" />
+            <img src={logo} alt="Logo" className="w-200 h-200" />
 
-            <h1 className="text-3xl">Scrum Spinner v1.0.1</h1>
+            <h1 className="text-2xl text-gray-600">Scrum Spinner v1.0.2</h1>
             <p className="text-lg text-gray-600">by Ludo</p>
             <p className="text-md text-gray-700 italic">
                 🎵 Sound of the day: <strong>{soundQuery}</strong>
