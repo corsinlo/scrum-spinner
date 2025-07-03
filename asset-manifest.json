@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/scrum-spinner/static/css/main.70d90ae2.css",
-    "main.js": "/scrum-spinner/static/js/main.5bc617cd.js",
+    "main.css": "/scrum-spinner/static/css/main.0f727c7c.css",
+    "main.js": "/scrum-spinner/static/js/main.2aea75d3.js",
     "static/js/453.9a686834.chunk.js": "/scrum-spinner/static/js/453.9a686834.chunk.js",
     "static/media/wheel1.mp3": "/scrum-spinner/static/media/wheel1.0106924bda12dbca2730.mp3",
     "index.html": "/scrum-spinner/index.html",
-    "main.70d90ae2.css.map": "/scrum-spinner/static/css/main.70d90ae2.css.map",
-    "main.5bc617cd.js.map": "/scrum-spinner/static/js/main.5bc617cd.js.map",
+    "main.0f727c7c.css.map": "/scrum-spinner/static/css/main.0f727c7c.css.map",
+    "main.2aea75d3.js.map": "/scrum-spinner/static/js/main.2aea75d3.js.map",
     "453.9a686834.chunk.js.map": "/scrum-spinner/static/js/453.9a686834.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.70d90ae2.css",
-    "static/js/main.5bc617cd.js"
+    "static/css/main.0f727c7c.css",
+    "static/js/main.2aea75d3.js"
   ]
 }
